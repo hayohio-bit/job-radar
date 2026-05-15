@@ -1,0 +1,80 @@
+# Job Radar Profile Template
+# 이 파일은 GitHub 공개용 템플릿입니다. 실제 profile.yaml은 GitHub Secrets로 관리됩니다.
+#
+# 자신의 프로필로 커스터마이징해 사용하세요:
+#   cp config/profile.example.yaml config/profile.yaml
+#   (그리고 profile.yaml은 .gitignore에 의해 커밋되지 않습니다)
+#
+# 모든 필드는 Claude API 프롬프트에 그대로 전달되어 적합도 분석에 활용됩니다.
+
+basic:
+  name: "Your Name"
+  target_role: "신입 백엔드 개발자"
+  education: "대학교 학사 (XX 전공)"
+  career_years: 0
+  github: "https://github.com/your-username"
+
+# === 자동 필터 조건 ===
+auto_filters:
+  # 4년제 필터 비활성화 (직접 보고 판단)
+  exclude_keywords_in_requirement: []
+  max_required_experience_years: 2
+  preferred_job_keywords:
+    - 백엔드
+    - Backend
+    - 풀스택
+    - Java
+    - Spring
+    - 신입
+  exclude_job_keywords:
+    - 영업
+    - QA자동화 전문
+    - DBA 전문
+    - 임베디드
+
+# === 보유 기술 (적합도 분석용) ===
+tech_stack:
+  주력:
+    - Java 21
+    - Spring Boot 3.x
+    - Spring Security + JWT
+    - Spring Data JPA
+    - MySQL 8
+
+  활용:
+    - React 18
+    - AWS EC2·S3·CloudFront
+    - GitHub Actions CI/CD
+    - Git/GitHub
+
+  입문:
+    - PostgreSQL
+    - Redis
+    - Docker
+
+# === 도메인 강점 (있다면) ===
+domain_strengths:
+  - label: "이전 도메인 경험 1"
+    근거: "구체적 근거 1줄"
+    매칭_업종: ["관련 업종 1", "관련 업종 2"]
+
+# === 포트폴리오 프로젝트 ===
+portfolio:
+  - name: "프로젝트명"
+    type: "개인/팀"
+    role: "본인 담당 영역"
+    deployed: "배포 URL (없으면 빈 문자열)"
+    stack: [Spring Boot, JPA, MySQL]
+
+# === 점수 가중치 ===
+scoring_weights:
+  기술스택_매칭: 35
+  학력_경력_적합: 25
+  도메인_연결: 20
+  회사_규모_안정성: 10
+  성장_환경: 10
+
+# === 필터링 임계값 ===
+thresholds:
+  notion_save_min_score: 70
+  slack_alert_min_score: 85

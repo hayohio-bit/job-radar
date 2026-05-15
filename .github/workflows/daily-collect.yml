@@ -1,0 +1,55 @@
+name: Daily Job Collection
+
+on:
+  schedule:
+    # 매일 한국시간 09:00 (UTC 00:00)
+    - cron: "0 0 * * *"
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14.4"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ⚠️ 개인 프로필은 GitHub Secrets에서 복원
+      # PROFILE_YAML secret에 실제 profile.yaml 전체 내용을 그대로 붙여넣어 저장
+      - name: Restore profile.yaml from secret
+        env:
+          PROFILE_YAML_CONTENT: ${{ secrets.PROFILE_YAML }}
+        run: |
+          mkdir -p config
+          printf '%s' "$PROFILE_YAML_CONTENT" > config/profile.yaml
+          echo "profile.yaml restored ($(wc -l < config/profile.yaml) lines)"
+
+      - name: Run Job Radar Pipeline
+        env:
+          SARAMIN_ACCESS_KEY: ${{ secrets.SARAMIN_ACCESS_KEY }}
+          WORKNET_API_KEY: ${{ secrets.WORKNET_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: python -m src.main
+
+      - name: Upload logs (if failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-logs
+          path: |
+            *.log
+          retention-days: 7
